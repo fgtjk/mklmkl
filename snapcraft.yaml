@@ -1,0 +1,20 @@
+name: mklmkl          
+version: '1.5'     
+summary: Mkl is a train 
+description: |
+  My custom mkl tool packaged as snap.
+
+base: core22        
+confinement: strict 
+grade: stable      
+
+apps:
+  mklmkl:
+    command: usr/bin/mkl  
+
+parts:
+  mkl:
+    plugin: dump
+    source: .
+    organize:
+      mkl: usr/bin/  

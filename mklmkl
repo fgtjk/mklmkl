@@ -1,0 +1,63 @@
+#!/bin/bash
+set -euo pipefail
+
+VERSION="1.5"
+NAME="mklmkl"
+
+show_help() {
+cat << EOF
+$NAME $VERSION - System utility tool
+
+Usage: mklmkl [command]
+
+Commands:
+    info        Show system information
+    ip          Show local and public IP
+    clean       Clean user cache files
+    du [DIR]    Show directory size (default: current)
+    help        Show help
+    version     Show version
+EOF
+}
+
+case "${1:-help}" in
+    version)
+        echo "$NAME $VERSION"
+        ;;
+    help)
+        show_help
+        ;;
+    info)
+        echo "=== $NAME System Info ==="
+        echo "Hostname: $(hostname)"
+        echo "User:     $USER"
+        echo "System:   $(lsb_release -d | cut -f2)"
+        echo "Kernel:   $(uname -r)"
+        echo "Memory:   $(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
+        echo "Disk (/): $(df -h / | awk '/\// {print $3 "/" $2}')"
+        ;;
+    ip)
+        echo "=== $NAME IP Info ==="
+        echo -n "Local IP:  "
+        hostname -I | awk '{print $1}'
+        echo -n "Public IP: "
+        curl -s ifconfig.me 2>/dev/null || echo "unavailable"
+        echo
+        ;;
+    clean)
+        echo "=== $NAME Clean Cache ==="
+        echo "Cleaning ~/.cache ..."
+        rm -rf ~/.cache/* 2>/dev/null || true
+        echo "Done."
+        ;;
+    du)
+        dir="${2:-.}"
+        echo "Directory size: $dir"
+        du -sh "$dir"
+        ;;
+    *)
+        show_help
+        exit 1
+        ;;
+esac
+
